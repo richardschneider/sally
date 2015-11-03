@@ -1,0 +1,28 @@
+{
+  "name": "sally",
+  "description": "Securing your audit logs",
+  "author": {
+    "name": "Richard Schneider",
+    "email": "makaretu@gmail.com"
+  },
+  "version": "0.0.1",
+  "license": "MIT",
+  "homepage": "https://richardschneider.github/sally",
+  "bugs": "https://github.com/richardschneider/sally/issues",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/richardschneider/sally"
+  },
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node ./node_modules/mocha/bin/mocha"
+  },
+  "dependencies": {
+    "on-finished": "^2.3.0"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "should": "^4.0.4"
+  }
+}
