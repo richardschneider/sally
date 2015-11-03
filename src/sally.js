@@ -3,7 +3,6 @@
 var crypto = require('crypto');
 var onFinished = require('on-finished');
 var os = require('os');
-var fs = require('fs');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 
@@ -21,7 +20,6 @@ function Sally(opts) {
     config.auditMethods = opts.auditMethods || ['POST', 'PUT', 'DELETE', 'PATCH'];
     config.user = opts.user || function() { return 'anonymous'; };
     config.hostname = opts.hostname || os.hostname();
-    config.filename = opts.filename || 'sally.log';
     
     noDigest = crypto.createHmac(config.hash, config.secret)
         .update('')
@@ -99,12 +97,5 @@ self.verify = function (audit, digest, prevDigest) {
 self.log = function(audit) {
     previousDigest = self.sign(audit, previousDigest);
     self.emit("log", audit, previousDigest);
-    var entry = JSON.stringify({
-        audit: audit,
-        digest: previousDigest
-    });
-    fs.appendFile(config.filename, entry + '\n', function (err) {
-        if (err) throw err;
-    });
 };
 
