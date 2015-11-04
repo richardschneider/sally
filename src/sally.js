@@ -31,6 +31,8 @@ util.inherits(Sally, EventEmitter);
 
 var self = module.exports = new Sally();
 
+self.options = config;
+
 /**
  * Adds the sally logger to the express pipeline.
  * 
