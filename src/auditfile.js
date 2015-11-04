@@ -7,8 +7,26 @@
 var fs = require('fs');
 var stream = require('stream')
 var split = require('split');
-var sally = require('./sally');
-var self = {};
+
+/**
+ * AuditFile constructor.
+ */
+function SallyAuditFile(opts)
+{
+	var self = this;
+	this.sally = require('./sally');
+	
+	opts = opts || {};
+	this.path = opts.path || 'sally.log';
+
+	this.sally.on('log', function (audit, digest) {
+		var entry = {
+			audit: audit,
+			digest: digest
+		};
+		fs.appendFileSync(self.path, encode(entry));
+	});
+}
 
 /*
  * An entry is one line in the files.
@@ -26,21 +44,10 @@ function decode(s) {
 	return o;
 }
 
-self.init = function () {
-	sally.on('log', function (audit, digest) {
-		var entry = {
-			audit: audit,
-			digest: digest
-		};
-		fs.appendFileSync(self.path, encode(entry));
-	});
-	
-	return self;
-};
-
-self.createReadStream = function () {
+SallyAuditFile.prototype.createReadStream = function () {
 	var lineNumber = 0;
 	var previousDigest;
+	var self = this;
 	var audit = new stream.Transform({ 
 		objectMode: true,
 		transform: function(line, encoding, done) {
@@ -49,7 +56,7 @@ self.createReadStream = function () {
 			if (!line || line == '') return done();
 			try {
 				var entry = decode(line);
-				if (!sally.verify(entry.audit, entry.digest, previousDigest))
+				if (!self.sally.verify(entry.audit, entry.digest, previousDigest))
 					throw new Error("Evidence of tampering, cannot verify the audit log entry.");
 				previousDigest = entry.digest;
 				transform.push(entry);
@@ -60,15 +67,9 @@ self.createReadStream = function () {
 			done();
 		}
 	});
-	return fs.createReadStream(self.path, { encoding: 'utf8' })
+	return fs.createReadStream(this.path, { encoding: 'utf8' })
 		.pipe(split())
 		.pipe(audit);
 };
 
-module.exports = function(opts)
-{
-	opts = opts || {};
-	self.path = opts.path || 'sally.log';
-	
-	return self.init();
-}
+module.exports = SallyAuditFile;

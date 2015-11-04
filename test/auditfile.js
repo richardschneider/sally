@@ -3,10 +3,9 @@
 var should = require('should');
 var fs = require('fs');
 var sally = require('../src/sally');
-var filestore = require('../src/auditfile');
-var auditlog = filestore();
+var auditlog = new sally.auditTrail();
 
-describe('Audit file', function () {
+describe('Audit trail', function () {
 
     it('should default to "sally.log"', function (done) {
 		auditlog.path.should.equal('sally.log');

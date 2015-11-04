@@ -34,6 +34,14 @@ var self = module.exports = new Sally();
 self.options = config;
 
 /**
+ * Create a new audit trail file.
+ *
+ *    new sally.auditTrial({ path: 'my-secure.log' })
+ */
+self.auditTrail = require('./auditfile');
+
+
+/**
  * Adds the sally logger to the express pipeline.
  * 
  * It generates audit record for every request that creates/modifies a resource.
