@@ -20,6 +20,22 @@ describe('Audit trail', function () {
 		done();
 	});
 	
+	it('should allow data with newlines', function (done) {
+		sally.log("hello 1\nhello 2");
+		var stream = auditlog.createReadStream();
+		stream
+			.on('data', function (entry) {})
+			.on('end', function () { done() });
+	});
+	
+	it('should allow data with backslashes', function (done) {
+		sally.log("c:\\temp\\log");
+		var stream = auditlog.createReadStream();
+		stream
+			.on('data', function (entry) {})
+			.on('end', function () { done() });
+	});
+
 	describe('Streaming', function() {
 	
 		it('should stream entries as an object', function (done) {
@@ -39,7 +55,7 @@ describe('Audit trail', function () {
 			auditlog.path = 'sally-bad-1.log';
 			if (fs.existsSync(auditlog.path))
 				fs.unlinkSync(auditlog.path);
-			fs.appendFileSync(auditlog.path, 'this is not JSON\n');
+			fs.appendFileSync(auditlog.path, 'this is not JSON');
 			var stream = auditlog.createReadStream();
 			stream
 				.on('data', function (d) {})
