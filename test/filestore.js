@@ -24,23 +24,24 @@ describe('Filestore', function () {
 	describe('Streaming', function() {
 	
 		it('should stream entries as an object', function (done) {
-			var hello2seen = false;
-			sally.log("hello world 2");
-			var stream = auditlog.createReadableStream();
+			var count = 0;
+			auditlog.path = 'sally-2.log';
+			var stream = auditlog.createReadStream();
 			stream.on('data', function (entry) {
-				if (entry.audit == 'hello world 2')
-					hello2seen = true;
+				++count;
 			});
 			stream.on('end', function () {
-				hello2seen.should.be.true;
+				count.should.equal(2);
 				done();
 			});
 		});
 		
 		it('should send error on bad JSON', function (done) {
 			auditlog.path = 'sally-bad-1.log';
+			if (fs.existsSync(auditlog.path))
+				fs.unlinkSync(auditlog.path);
 			fs.appendFileSync(auditlog.path, 'this is not JSON\n');
-			var stream = auditlog.createReadableStream();
+			var stream = auditlog.createReadStream();
 			stream
 				.on('data', function (d) {})
 				.on('error', function (err) {
@@ -54,7 +55,7 @@ describe('Filestore', function () {
 
 		it('should send error on tampering', function (done) {
 			auditlog.path = 'sally-bad.log';
-			var stream = auditlog.createReadableStream();
+			var stream = auditlog.createReadStream();
 			stream
 				.on('data', function (d) {})
 				.on('error', function (err) {
@@ -68,7 +69,7 @@ describe('Filestore', function () {
 
 		it('should include path and line # in an error', function (done) {
 			auditlog.path = 'sally-bad.log';
-			var stream = auditlog.createReadableStream();
+			var stream = auditlog.createReadStream();
 			stream
 				.on('data', function (d) {})
 				.on('error', function (err) {
@@ -81,6 +82,40 @@ describe('Filestore', function () {
 				});
 		});
 
+		it('should process an empty log file', function (done) {
+			auditlog.path = 'empty.log';
+			var stream = auditlog.createReadStream();
+			stream
+				.on('data', function (d) {})
+				.on('end', function () {
+					done();
+				});
 		});
+
+		it('should handle CRLFs or just newlines', function (done) {
+			auditlog.path = 'sally-crlf.log';
+			var count = 0;
+			var stream = auditlog.createReadStream();
+			stream
+				.on('data', function (d) {++count})
+				.on('end', function () {
+					count.should.equal(2);
+					done();
+				});
+		});
+
+		it('should handle log without ending newline/CRLF', function (done) {
+			auditlog.path = 'sally-without-trailing-newline.log';
+			var count = 0;
+			var stream = auditlog.createReadStream();
+			stream
+				.on('data', function (d) {++count})
+				.on('end', function () {
+					count.should.equal(2);
+					done();
+				});
+		});
+
+	});
 });
 
