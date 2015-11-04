@@ -6,6 +6,7 @@
  
 var fs = require('fs');
 var stream = require('stream')
+var split = require('split');
 var sally = require('./sally');
 var self = {};
 
@@ -14,6 +15,15 @@ var self = {};
  */
 function encode(entry) {
 	return JSON.stringify(entry) + '\n';
+}
+
+function decode(s) {
+	var o = JSON.parse(s);
+	if (!o.digest)
+		throw new Error("The digest is missing.");
+	if (!o.audit)
+		throw new Error("The audit information is missing.");
+	return o;
 }
 
 self.init = function () {
@@ -28,46 +38,31 @@ self.init = function () {
 	return self;
 };
 
-self.createReadableStream = function () {
+self.createReadStream = function () {
 	var lineNumber = 0;
 	var previousDigest;
-	var source = fs.createReadStream(self.path);
 	var audit = new stream.Transform({ 
 		objectMode: true,
-		transform: function(chunk, encoding, done) {
+		transform: function(line, encoding, done) {
 			var transform = this;
-			if (transform.inError)
-				return done();
-			var data = chunk.toString();
-			if (transform._lastLineData) data = transform._lastLineData + data;
-		 
-			var lines = data.split('\n');
-			transform._lastLineData = lines.splice(lines.length-1,1)[0];
-		 
-			lines.forEach(function (line) { 
-				try {
-					if (transform.inError) return;
-					lineNumber += 1;
-					var o = JSON.parse(line);
-					if (!o.digest)
-						throw new Error("The digest is missing.");
-					if (!o.audit)
-						throw new Error("The audit information is missing.");
-					if (!sally.verify(o.audit, o.digest, previousDigest))
-						throw new Error("Evidence of tampering.");
-					previousDigest = o.digest;
-					transform.push(o);
-				}
-				catch (e) {
-					transform.inError = true;
-					transform.emit('error', new Error(self.path + ':' + lineNumber + ' ' + e.message));
-				}
-			});
+			++lineNumber;
+			if (!line || line == '') return done();
+			try {
+				var entry = decode(line);
+				if (!sally.verify(entry.audit, entry.digest, previousDigest))
+					throw new Error("Evidence of tampering, cannot verify the audit log entry.");
+				previousDigest = entry.digest;
+				transform.push(entry);
+			}
+			catch (e) {
+				transform.emit('error', new Error(self.path + ':' + lineNumber + ' ' + e.message));
+			}
 			done();
 		}
 	});
-	source.pipe(audit);
-	return audit;
+	return fs.createReadStream(self.path, { encoding: 'utf8' })
+		.pipe(split())
+		.pipe(audit);
 };
 
 module.exports = function(opts)

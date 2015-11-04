@@ -19,7 +19,8 @@
     "test": "node ./node_modules/mocha/bin/mocha"
   },
   "dependencies": {
-    "on-finished": "^2.3.0"
+    "on-finished": "^2.3.0",
+    "split": "^1.0.0"
   },
   "devDependencies": {
     "mocha": "*",
