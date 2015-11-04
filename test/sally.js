@@ -3,6 +3,19 @@
 var should = require('should');
 var sally = require('../src/sally');
 
+describe('Epoch', function () {
+	it('should emit epochStart when starting', function (done) {
+		sally.once('epochStart', function() {done()} );
+		sally.startEpoch();
+	});
+
+	it('should emit epochEnd when ending', function (done) {
+		sally.once('epochEnd', function() {done()} );
+		sally.startEpoch();
+		sally.endEpoch();
+	});
+});
+
 describe('Crypto', function () {
     var d1 = sally.sign('a');
     var d2 = sally.sign('b', d1);

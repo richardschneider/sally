@@ -19,13 +19,20 @@ function SallyAuditFile(opts)
 	opts = opts || {};
 	this.path = opts.path || 'sally.log';
 
-	this.sally.on('log', function (audit, digest) {
-		var entry = {
-			audit: audit,
-			digest: digest
-		};
-		fs.appendFileSync(self.path, encode(entry));
-	});
+	this.sally
+		.on('log', function (audit, digest) {
+			var entry = {
+				audit: audit,
+				digest: digest
+			};
+			fs.appendFileSync(self.path, encode(entry));
+		})
+		.on('epochStart', function (epoch) {
+			// TODO: console.log('epoch ' + epoch.id + ' started');
+		})
+		.on('epochEnd', function (epoch) {
+			// TODO: console.log('epoch ' + epoch.id + ' ended');
+		});
 }
 
 /*

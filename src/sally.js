@@ -1,16 +1,19 @@
 'use strict';
 
 var crypto = require('crypto');
+var process = require('process');
 var onFinished = require('on-finished');
 var os = require('os');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 
 var config = {};
+var epoch;
 var noDigest;
 var previousDigest;
 
 function Sally(opts) {
+	var self = this;
     // Initialize necessary properties from `EventEmitter` in this instance
     EventEmitter.call(this);
 
@@ -24,7 +27,7 @@ function Sally(opts) {
     noDigest = crypto.createHmac(config.hash, config.secret)
         .update('')
         .digest('base64');
-    
+		   
     return this;
 }
 util.inherits(Sally, EventEmitter);
@@ -105,7 +108,32 @@ self.verify = function (audit, digest, prevDigest) {
  * can then append the audit information to their log.
  */
 self.log = function(audit) {
+	if (!epoch) self.startEpoch();
+	
     previousDigest = self.sign(audit, previousDigest);
     self.emit("log", audit, previousDigest);
 };
 
+/**
+ * Starts a new epoch.
+ */
+ self.startEpoch = function() {
+	
+	epoch = {
+		id: self.endEpoch(),
+		hash: config.hash
+	};
+	
+	self.emit("epochStart", epoch);
+ }
+ 
+ self.endEpoch = function() {
+	if (!epoch) return 0;
+	
+	self.emit("epochEnd", epoch);
+	var next = epoch.id + 1;
+	epoch = undefined;
+	return next;
+ }
+ 
+process.on('exit', self.endEpoch);
