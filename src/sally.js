@@ -2,6 +2,7 @@
 
 var crypto = require('crypto');
 var process = require('process');
+var durationParse = require('parse-duration');
 var onFinished = require('on-finished');
 var os = require('os');
 var util = require('util');
@@ -102,38 +103,56 @@ self.verify = function (audit, digest, prevDigest) {
 };
 
 /**
- * Adds a entry into the audit.
+ * Adds a record into the audit.
  * 
  * Signs the audit information and then emits the 'log' event.  Audit logs
  * can then append the audit information to their log.
  */
 self.log = function(audit) {
 	if (!epoch) self.startEpoch();
-	
-    previousDigest = self.sign(audit, previousDigest);
+	epoch.recordCount += 1;	
+    
+	previousDigest = self.sign(audit, previousDigest);
     self.emit("log", audit, previousDigest);
+	
+	if (epoch.maxRecords <= epoch.recordCount)
+		self.endEpoch('maximum number of records reached');
 };
 
 /**
  * Starts a new epoch.
  */
- self.startEpoch = function() {
-	
+ self.startEpoch = function(opts) {
+	opts = opts || {};
 	epoch = {
 		id: self.endEpoch(),
-		hash: config.hash
+		hash: config.hash,
+		startTime: new Date().toISOString(),
+		maxRecords: opts.maxRecords || 1024,
+		ttl: opts.ttl || '1m',
+		recordCount: 0
 	};
 	
+	var ttl = durationParse(epoch.ttl);
+	setTimeout(function () {
+		self.endEpoch('ttl expired');
+	}, ttl);
 	self.emit("epochStart", epoch);
+	return epoch;
  }
  
- self.endEpoch = function() {
+ self.endEpoch = function(reason) {
 	if (!epoch) return 0;
 	
+	epoch.endTime = new Date().toISOString();
+	epoch.endReason = reason;
 	self.emit("epochEnd", epoch);
+	
 	var next = epoch.id + 1;
 	epoch = undefined;
 	return next;
  }
  
-process.on('exit', self.endEpoch);
+process.on('exit', function (code) {
+	self.endEpoch('process exit with ' + code);
+});
