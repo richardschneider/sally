@@ -3,10 +3,20 @@
 var should = require('should');
 var fs = require('fs');
 var sally = require('../src/sally');
-var auditlog = new sally.auditTrail();
 
 describe('Audit trail', function () {
-
+	var auditlog;
+	
+	before(function (done) {
+		auditlog = new sally.auditTrail();
+        done();
+	});
+	
+	after(function (done) {
+		auditlog.close();
+        done();
+	});
+	
     it('should default to "sally.log"', function (done) {
 		auditlog.path.should.equal('sally.log');
         done();
@@ -26,6 +36,30 @@ describe('Audit trail', function () {
 		stream
 			.on('data', function (entry) {})
 			.on('end', function () { done() });
+	});
+	
+	it('should not record entries when closed', function (done) {
+		var path = 'closed.log';
+		if (fs.existsSync(path))
+			fs.unlinkSync(path);
+		var log = new sally.auditTrail({path: path});
+		sally.startCycle();
+		sally.log('line 1');
+		sally.log('line 2');
+		log.close();
+		sally.log('line 3');
+		
+		var i;
+		var count = 0;
+		fs.createReadStream(path)
+		  .on('data', function(chunk) {
+			for (i=0; i < chunk.length; ++i)
+			  if (chunk[i] == 10) count++;
+		  })
+		  .on('end', function() {
+		    count.should.equal(2);
+			done();
+		  });
 	});
 	
 	it('should allow data with backslashes', function (done) {
@@ -126,7 +160,7 @@ describe('Audit trail', function () {
 			stream
 				.on('data', function (d) {++count})
 				.on('end', function () {
-					count.should.equal(2);
+					count.should.equal(1);
 					done();
 				});
 		});

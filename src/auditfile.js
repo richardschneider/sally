@@ -18,22 +18,46 @@ function SallyAuditFile(opts)
 	
 	opts = opts || {};
 	this.path = opts.path || 'sally.log';
-
+	this.onLog = this.onLog.bind(this);
+	this.onEpochStart = this.onEpochStart.bind(this);
+	this.onEpochEnd = this.onEpochEnd.bind(this);
+	this.onCycleStart = this.onCycleStart.bind(this);
+	this.onCycleEnd = this.onCycleEnd.bind(this);
 	this.sally
-		.on('log', function (audit, digest) {
-			var entry = {
-				audit: audit,
-				digest: digest
-			};
-			fs.appendFileSync(self.path, encode(entry));
-		})
-		.on('epochStart', function (epoch) {
-			// TODO: console.log('epoch ' + epoch.id + ' started');
-		})
-		.on('epochEnd', function (epoch) {
-			// TODO: console.log('epoch ' + epoch.id + ' ended');
-		});
+		.on('log', this.onLog)
+		.on('epochStart', this.onEpochStart)
+		.on('epochEnd', this.onEpochEnd)
+		.on('cycleStart', this.onCycleStart)
+		.on('cycleEnd', this.onCycleEnd);
 }
+
+SallyAuditFile.prototype.onLog = function (audit, digest) {
+	var entry = {
+		audit: audit,
+		digest: digest
+	};
+	fs.appendFileSync(this.path, encode(entry));
+};
+
+SallyAuditFile.prototype.onEpochStart = function (epoch) {
+};
+
+SallyAuditFile.prototype.onEpochEnd = function (epoch) {
+};
+
+SallyAuditFile.prototype.onCycleStart = function (cycle) {
+};
+
+SallyAuditFile.prototype.onCycleEnd = function (cyle) {
+};
+
+SallyAuditFile.prototype.close = function () {
+	this.sally.removeListener('log', this.onLog);
+	this.sally.removeListener('epochStart', this.onEpochStart);
+	this.sally.removeListener('epochEnd', this.onEpochEnd);
+	this.sally.removeListener('cycleStart', this.onCycleStart);
+	this.sally.removeListener('cycleEnd', this.onCycleEnd);
+};
 
 /*
  * An entry is one line in the files.
