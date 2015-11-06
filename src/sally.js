@@ -37,8 +37,6 @@ util.inherits(Sally, EventEmitter);
 
 var self = module.exports = new Sally();
 
-self.options = config;
-
 /**
  * Create a new audit trail file.
  *
