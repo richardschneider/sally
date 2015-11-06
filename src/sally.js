@@ -44,7 +44,7 @@ self.options = config;
  *
  *    new sally.auditTrial({ path: 'my-secure.log' })
  */
-self.auditTrail = require('./auditfile');
+self.auditTrail = require('./writer');
 
 
 /**
