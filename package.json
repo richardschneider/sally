@@ -5,7 +5,7 @@
     "name": "Richard Schneider",
     "email": "makaretu@gmail.com"
   },
-  "version": "0.0.1",
+  "version": "0.0.42",
   "license": "MIT",
   "homepage": "https://richardschneider.github/sally",
   "bugs": "https://github.com/richardschneider/sally/issues",
@@ -15,10 +15,14 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node src/sally-cli.js --help",
     "test": "node ./node_modules/mocha/bin/mocha"
   },
+  "bin": {
+    "sally": "src/sally-cli.js"
+  },
   "dependencies": {
+    "commander": "^2.9.0",
     "on-finished": "^2.3.0",
     "parse-duration": "^0.1.1",
     "split": "^1.0.0",

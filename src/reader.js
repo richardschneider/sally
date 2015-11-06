@@ -17,6 +17,7 @@ function SallyReader(opts)
 	
 	opts = opts || {};
 	this.path = opts.path || 'sally.log';
+	this.secret = opts.secret;
 }
 
 
@@ -41,7 +42,7 @@ SallyReader.prototype.createReadStream = function () {
 			if (!line || line == '') return done();
 			try {
 				var entry = decode(line);
-				if (!self.sally.verify(entry.audit, entry.digest, previousDigest))
+				if (!self.sally.verify(entry.audit, entry.digest, previousDigest, self.secret))
 					throw new Error("Evidence of tampering, cannot verify the audit log entry.");
 				previousDigest = entry.digest;
 				transform.push(entry);

@@ -46,7 +46,6 @@ self.options = config;
  */
 self.auditTrail = require('./writer');
 
-
 /**
  * Adds the sally logger to the express pipeline.
  * 
@@ -85,13 +84,13 @@ self.logger = function (req, res, next){
 /**
  * Internal method to sign an audit entry.
  */
- self.sign = function (audit, prevDigest) {
+ self.sign = function (audit, prevDigest, secret) {
     if (typeof audit === 'object')
         audit = JSON.stringify(audit);
     if (!prevDigest)
         prevDigest = noDigest;
         
-    return crypto.createHmac(config.hash, config.secret)
+    return crypto.createHmac(config.hash, secret || config.secret)
         .update(audit)
         .update(prevDigest)
         .digest('base64');
@@ -100,8 +99,8 @@ self.logger = function (req, res, next){
 /**
  * Verifies that the audit information has not been tampered with.
  */
-self.verify = function (audit, digest, prevDigest) {
-    return digest == self.sign(audit, prevDigest);
+self.verify = function (audit, digest, prevDigest, secret) {
+    return digest == self.sign(audit, prevDigest, secret);
 };
 
 /**
