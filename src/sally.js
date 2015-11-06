@@ -1,6 +1,7 @@
 'use strict';
 
 var crypto = require('crypto');
+var uuid = require('uuid');
 var process = require('process');
 var durationParse = require('parse-duration');
 var onFinished = require('on-finished');
@@ -9,6 +10,7 @@ var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 
 var config = {};
+var cycle;
 var epoch;
 var noDigest;
 var previousDigest;
@@ -123,10 +125,14 @@ self.log = function(audit) {
  * Starts a new epoch.
  */
  self.startEpoch = function(opts) {
+	self.endEpoch();
+	if (!cycle) self.startCycle();
+	cycle.epochCount += 1;
+	
 	opts = opts || {};
 	epoch = {
-		id: self.endEpoch(),
-		hash: config.hash,
+		id: cycle.epochCount,
+		cycle: cycle,
 		startTime: new Date().toISOString(),
 		maxRecords: opts.maxRecords || 1024,
 		ttl: opts.ttl || '1m',
@@ -147,12 +153,50 @@ self.log = function(audit) {
 	epoch.endTime = new Date().toISOString();
 	epoch.endReason = reason;
 	self.emit("epochEnd", epoch);
-	
-	var next = epoch.id + 1;
+
+	if (cycle && cycle.maxEpochs <= cycle.epochCount)
+		self.endCycle();
+		
 	epoch = undefined;
-	return next;
  }
  
-process.on('exit', function (code) {
+/**
+ * Starts a new cycle.
+ */
+ self.startCycle = function(opts) {
+	self.endCycle();
+	opts = opts || {};
+	cycle = {
+		id: uuid.v4(),
+		hash: config.hash,
+		startTime: new Date().toISOString(),
+		maxEpochs: opts.maxEpochs || 20,
+		ttl: opts.ttl || '20m',
+		epochCount: 0
+	};
+	
+	var ttl = durationParse(cycle.ttl);
+	setTimeout(function () {
+		self.endCycle('ttl expired');
+	}, ttl);
+	self.emit("cycleStart", cycle);
+	return cycle;
+ }
+ 
+ self.endCycle = function(reason) {
+	if (!cycle) return 0;
+	
+	var prevCycle = cycle;
+	cycle = undefined;
+	
+	self.endEpoch();
+	
+	prevCycle.endTime = new Date().toISOString();
+	prevCycle.endReason = reason;
+	self.emit("cycleEnd", prevCycle);
+ }
+
+ process.on('exit', function (code) {
 	self.endEpoch('process exit with ' + code);
+	self.endCycle('process exit with ' + code);
 });
