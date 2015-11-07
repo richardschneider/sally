@@ -5,6 +5,7 @@
  */
  
 var fs = require('fs');
+var os = require('os');
 
 /**
  * AuditFile constructor.
@@ -61,7 +62,7 @@ SallyWriter.prototype.close = function () {
  * An entry is one line in the files.
  */
 function encode(entry) {
-	return JSON.stringify(entry) + '\n';
+	return JSON.stringify(entry) + os.EOL;
 }
 
 /* For our tests.  TODO they should be changed not to use thus function. */
