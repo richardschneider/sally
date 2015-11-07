@@ -25,7 +25,7 @@ function decode(s) {
 	var o = JSON.parse(s);
 	if (!o.digest)
 		throw new Error("The digest is missing.");
-	if (!o.audit)
+	if (!(o.audit || o.cycle || o.epoch))
 		throw new Error("The audit information is missing.");
 	return o;
 }
@@ -42,7 +42,7 @@ SallyReader.prototype.createReadStream = function () {
 			if (!line || line == '') return done();
 			try {
 				var entry = decode(line);
-				if (!self.sally.verify(entry.audit, entry.digest, previousDigest, self.secret))
+				if (!self.sally.verify(entry.audit || entry.epoch || entry.cycle, entry.digest, previousDigest, self.secret))
 					throw new Error("Evidence of tampering, cannot verify the audit log entry.");
 				previousDigest = entry.digest;
 				transform.push(entry);

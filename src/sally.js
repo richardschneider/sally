@@ -111,18 +111,23 @@ self.log = function(audit) {
 	if (!epoch) self.startEpoch();
 	epoch.recordCount += 1;	
     
-	previousDigest = self.sign(audit, previousDigest);
+	self._sign(audit);
     self.emit("log", audit, previousDigest);
 	
 	if (epoch.maxRecords <= epoch.recordCount)
 		self.endEpoch('maximum number of records reached');
 };
 
+self._sign = function(m) {
+	previousDigest = self.sign(m, previousDigest);
+	return previousDigest;
+};
+
 /**
  * Starts a new epoch.
  */
  self.startEpoch = function(opts) {
-	self.endEpoch();
+	self.endEpoch('starting a new epoch');
 	if (!cycle) self.startCycle();
 	cycle.epochCount += 1;
 	
@@ -152,7 +157,7 @@ self.log = function(audit) {
 	self.emit("epochEnd", epoch);
 
 	if (cycle && cycle.maxEpochs <= cycle.epochCount)
-		self.endCycle();
+		self.endCycle('max epochs per cycle reached');
 		
 	epoch = undefined;
  }
@@ -161,7 +166,7 @@ self.log = function(audit) {
  * Starts a new cycle.
  */
  self.startCycle = function(opts) {
-	self.endCycle();
+	self.endCycle('starting a new cycle');
 	opts = opts || {};
 	cycle = {
 		id: uuid.v4(),
@@ -186,7 +191,7 @@ self.log = function(audit) {
 	var prevCycle = cycle;
 	cycle = undefined;
 	
-	self.endEpoch();
+	self.endEpoch(reason);
 	
 	prevCycle.endTime = new Date().toISOString();
 	prevCycle.endReason = reason;
@@ -194,6 +199,5 @@ self.log = function(audit) {
  }
 
  process.on('exit', function (code) {
-	self.endEpoch('process exit with ' + code);
 	self.endCycle('process exit with ' + code);
 });

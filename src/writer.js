@@ -45,9 +45,19 @@ SallyWriter.prototype.onEpochEnd = function (epoch) {
 };
 
 SallyWriter.prototype.onCycleStart = function (cycle) {
+	var entry = {
+		cycle: cycle,
+		digest: this.sally._sign(cycle)
+	};
+	fs.appendFileSync(this.path, encode(entry));
 };
 
-SallyWriter.prototype.onCycleEnd = function (cyle) {
+SallyWriter.prototype.onCycleEnd = function (cycle) {
+	var entry = {
+		cycle: cycle,
+		digest: this.sally._sign(cycle)
+	};
+	fs.appendFileSync(this.path, encode(entry));
 };
 
 SallyWriter.prototype.close = function () {

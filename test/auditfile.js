@@ -13,6 +13,7 @@ describe('Audit trail', function () {
 	});
 	
 	after(function (done) {
+		sally.endCycle('testing finished');
 		auditlog.close();
         done();
 	});
@@ -42,8 +43,8 @@ describe('Audit trail', function () {
 		var path = 'closed.log';
 		if (fs.existsSync(path))
 			fs.unlinkSync(path);
-		var log = new sally.auditTrail({path: path});
 		sally.startCycle();
+		var log = new sally.auditTrail({path: path});
 		sally.log('line 1');
 		sally.log('line 2');
 		log.close();
@@ -81,6 +82,7 @@ describe('Audit trail', function () {
 			});
 			stream.on('end', function () {
 				count.should.equal(2);
+				auditlog.path = 'foo.log';
 				done();
 			});
 		});
@@ -94,9 +96,11 @@ describe('Audit trail', function () {
 			stream
 				.on('data', function (d) {})
 				.on('error', function (err) {
+					auditlog.path = 'foo.log';
 					done();
 				})
 				.on('end', function () {
+					auditlog.path = 'foo.log';
 					should.fail('error not emitted')
 					done();
 				});
@@ -108,9 +112,11 @@ describe('Audit trail', function () {
 			stream
 				.on('data', function (d) {})
 				.on('error', function (err) {
+					auditlog.path = 'foo.log';
 					done();
 				})
 				.on('end', function () {
+					auditlog.path = 'foo.log';
 					should.fail('error not emitted')
 					done();
 				});
@@ -123,10 +129,12 @@ describe('Audit trail', function () {
 				.on('data', function (d) {})
 				.on('error', function (err) {
 					err.message.should.startWith('sally-bad.log:2');
+					auditlog.path = 'foo.log';
 					done();
 				})
 				.on('end', function () {
 					should.fail('error not emitted')
+					auditlog.path = 'foo.log';
 					done();
 				});
 		});
@@ -137,6 +145,7 @@ describe('Audit trail', function () {
 			stream
 				.on('data', function (d) {})
 				.on('end', function () {
+					auditlog.path = 'foo.log';
 					done();
 				});
 		});
@@ -149,6 +158,7 @@ describe('Audit trail', function () {
 				.on('data', function (d) {++count})
 				.on('end', function () {
 					count.should.equal(2);
+					auditlog.path = 'foo.log';
 					done();
 				});
 		});
@@ -161,6 +171,7 @@ describe('Audit trail', function () {
 				.on('data', function (d) {++count})
 				.on('end', function () {
 					count.should.equal(1);
+					auditlog.path = 'foo.log';
 					done();
 				});
 		});
