@@ -7,22 +7,20 @@ var sally = require('../src/sally');
 describe('Audit trail', function () {
 	var auditlog;
 	
-	before(function (done) {
-		auditlog = new sally.auditTrail();
+	beforeEach(function (done) {
+		sally.endCycle('starting audit test');
+		if (fs.existsSync('audit-test.sal'))
+			fs.unlinkSync('audit-test.sal');
+		auditlog = new sally.auditTrail({ path: 'audit-test.sal' });
         done();
 	});
 	
-	after(function (done) {
+	afterEach(function (done) {
 		sally.endCycle('testing finished');
 		auditlog.close();
         done();
 	});
 	
-    it('should default to "sally.log"', function (done) {
-		auditlog.path.should.equal('sally.log');
-        done();
-    });
-
 	it('should create the audit log if not present', function (done) {
 		if (fs.existsSync(auditlog.path))
 			fs.unlinkSync(auditlog.path);
@@ -43,12 +41,13 @@ describe('Audit trail', function () {
 		var path = 'closed.log';
 		if (fs.existsSync(path))
 			fs.unlinkSync(path);
-		sally.startCycle();
 		var log = new sally.auditTrail({path: path});
+		sally.startCycle();
 		sally.log('line 1');
 		sally.log('line 2');
 		log.close();
 		sally.log('line 3');
+		sally.log('line 4');
 		
 		var i;
 		var count = 0;
@@ -58,7 +57,7 @@ describe('Audit trail', function () {
 			  if (chunk[i] == 10) count++;
 		  })
 		  .on('end', function() {
-		    count.should.equal(2);
+		    count.should.equal(2 + 1);
 			done();
 		  });
 	});

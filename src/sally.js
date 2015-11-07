@@ -4,7 +4,6 @@ var crypto = require('crypto');
 var uuid = require('uuid');
 var process = require('process');
 var durationParse = require('parse-duration');
-var onFinished = require('on-finished');
 var os = require('os');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
@@ -13,7 +12,6 @@ var config = {};
 var cycle;
 var epoch;
 var noDigest;
-var previousDigest;
 
 function Sally(opts) {
 	var self = this;
@@ -46,38 +44,10 @@ self.auditTrail = require('./writer');
 
 /**
  * Adds the sally logger to the express pipeline.
- * 
- * It generates audit record for every request that creates/modifies a resource.
+ *
+ * app.use(sally.express({ ... })
  */
-self.logger = function (req, res, next){
-    var now = new Date();
-
-    function logRequest()
-    {
-        var ok = 200 <= res.statusCode && res.statusCode <= 400;
-        if (ok && config.auditMethods.indexOf(req.method) < 0)
-            return;
-            
-        var audit = {
-            who: config.user(req),
-            when: now.toISOString(),
-            where: {
-                client: req.ip
-                    || req._remoteAddress
-                    || (req.connection && req.connection.remoteAddress)
-                    || undefined,
-                server: config.hostname
-                },
-            why: req.method,
-            what: (req.method == 'POST') ? res.header['Location'] : req.url,
-            status: res.statusCode,
-        };
-        self.log(audit);
-    }
-    
-    onFinished(res, logRequest);
-    next();
-};
+self.express = require('./express');
 
 /**
  * Internal method to sign an audit entry.
@@ -85,12 +55,10 @@ self.logger = function (req, res, next){
  self.sign = function (audit, prevDigest, secret) {
     if (typeof audit === 'object')
         audit = JSON.stringify(audit);
-    if (!prevDigest)
-        prevDigest = noDigest;
         
     return crypto.createHmac(config.hash, secret || config.secret)
         .update(audit)
-        .update(prevDigest)
+        .update(prevDigest || noDigest)
         .digest('base64');
 };
 
@@ -111,16 +79,10 @@ self.log = function(audit) {
 	if (!epoch) self.startEpoch();
 	epoch.recordCount += 1;	
     
-	self._sign(audit);
-    self.emit("log", audit, previousDigest);
+    self.emit("log", audit);
 	
 	if (epoch.maxRecords <= epoch.recordCount)
 		self.endEpoch('maximum number of records reached');
-};
-
-self._sign = function(m) {
-	previousDigest = self.sign(m, previousDigest);
-	return previousDigest;
 };
 
 /**

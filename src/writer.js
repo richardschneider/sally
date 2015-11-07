@@ -17,6 +17,7 @@ function SallyWriter(opts)
 	
 	opts = opts || {};
 	this.path = opts.path || 'sally.log';
+	this.digest = undefined;
 	this.onLog = this.onLog.bind(this);
 	this.onEpochStart = this.onEpochStart.bind(this);
 	this.onEpochEnd = this.onEpochEnd.bind(this);
@@ -30,10 +31,11 @@ function SallyWriter(opts)
 		.on('cycleEnd', this.onCycleEnd);
 }
 
-SallyWriter.prototype.onLog = function (audit, digest) {
+SallyWriter.prototype.onLog = function (audit) {
+	this.digest = this.sally.sign(audit, this.digest); 
 	var entry = {
 		audit: audit,
-		digest: digest
+		digest: this.digest
 	};
 	fs.appendFileSync(this.path, encode(entry));
 };
@@ -45,19 +47,22 @@ SallyWriter.prototype.onEpochEnd = function (epoch) {
 };
 
 SallyWriter.prototype.onCycleStart = function (cycle) {
+	this.digest = this.sally.sign(cycle, this.digest); 
 	var entry = {
 		cycle: cycle,
-		digest: this.sally._sign(cycle)
+		digest: this.digest
 	};
 	fs.appendFileSync(this.path, encode(entry));
 };
 
 SallyWriter.prototype.onCycleEnd = function (cycle) {
+	this.digest = this.sally.sign(cycle, this.digest); 
 	var entry = {
 		cycle: cycle,
-		digest: this.sally._sign(cycle)
+		digest: this.digest
 	};
 	fs.appendFileSync(this.path, encode(entry));
+	this.digest = undefined;
 };
 
 SallyWriter.prototype.close = function () {
