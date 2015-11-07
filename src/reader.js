@@ -45,6 +45,8 @@ SallyReader.prototype.createReadStream = function () {
 				if (!self.sally.verify(entry.audit || entry.epoch || entry.cycle, entry.digest, previousDigest, self.secret))
 					throw new Error("Evidence of tampering, cannot verify the audit log entry.");
 				previousDigest = entry.digest;
+				if (entry.cycle && entry.cycle.endTime)
+					previousDigest = undefined;
 				transform.push(entry);
 			}
 			catch (e) {

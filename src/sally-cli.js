@@ -27,6 +27,11 @@ program
   .description('verify the audit trail file, glob wildcards allowed')
   .action(verify)
 
+program
+  .command('list <file>')
+  .description('petty print the audit trail file')
+  .action(listFile)
+
 program.parse(process.argv);
 if (!program.args.length) program.help();
 
@@ -71,5 +76,31 @@ function verifyFile(path, options) {
 		.on('end', function () {
 			if (program.verbose)
 				console.log("Passed", path);
+		});
+}
+
+function listFile(path, options) {
+    var secret = program.secret || process.env.sallySecret;
+	if (!secret) {
+		console.error('Need the audit trail\'s secret; use --secret [text]');
+		process.exitCode = 1;
+		return;
+	}
+	if (program.verbose)
+		console.log("List", path);
+	
+	new reader({path: path, secret: secret})
+		.createReadStream()
+		.on('data', function (msg) {
+			console.log(msg);
+			console.log();
+		})
+		.on('error', function (e) {
+			console.error(e.message)
+			process.exitCode = 1;
+		})
+		.on('end', function () {
+			if (program.verbose)
+				console.log("Done", path);
 		});
 }
