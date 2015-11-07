@@ -39,3 +39,34 @@ Produces an audit trail of each request that modifies a resource or returns an e
      status: 404 },
   digest: 'xUTQHAbg8W+mZkRy4zsUs8bVw2NK/e0JZd/vNbkujRg=' }
 ````
+### with javascript
+
+```` javascript
+var sally = require('sally');
+new sally.AuditTrail({ secret: 'a not secure secret' });
+
+sally.log('hello world');
+sally.log({ user: 'x', operation: 'login'})
+````
+
+### with command line
+
+````
+sally --help
+
+  Usage: sally-cli <cmd>
+
+  Commands:
+
+    verify <file>  verify the audit trail file, glob wildcards allowed
+    list <file>    petty print the audit trail file
+
+  Secure audit log manager
+
+  Options:
+
+    -h, --help           output usage information
+    -V, --version        output the version number
+    -s, --secret [text]  the secret for the audit trail, defaults to the environment variable "sallySecret"
+    -v, --verbose        verbose
+````
