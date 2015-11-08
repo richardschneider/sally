@@ -11,29 +11,27 @@ var EventEmitter = require('events').EventEmitter;
 var config = {};
 var cycle;
 var epoch;
-var noDigest;
 
 function Sally(opts) {
-	var self = this;
     // Initialize necessary properties from `EventEmitter` in this instance
     EventEmitter.call(this);
-
-    opts = opts || {};
-    config.hash = opts.hash || 'sha256';
-    config.secret = opts.secret || 'this is not a secure secret';
-    config.auditMethods = opts.auditMethods || ['POST', 'PUT', 'DELETE', 'PATCH'];
-    config.user = opts.user || function() { return 'anonymous'; };
-    config.hostname = opts.hostname || os.hostname();
-    
-    noDigest = crypto.createHmac(config.hash, config.secret)
-        .update('')
-        .digest('base64');
-		   
-    return this;
+	this.configure(opts);
 }
 util.inherits(Sally, EventEmitter);
 
+Sally.prototype.configure = function (opts) {
+    opts = opts || {};
+    config.hash = opts.hash || 'sha256';
+    var s = opts.secret || process.env.SallySecret;
+	if (s && s != '' && s != 'undefined')
+		config.secret = s;
+};
+
 var self = module.exports = new Sally();
+
+self.removeSecret = function () {
+	delete config.secret;
+};
 
 /**
  * Create a new audit trail file.
@@ -53,12 +51,22 @@ self.express = require('./express');
  * Internal method to sign an audit entry.
  */
  self.sign = function (audit, prevDigest, secret) {
+	secret = secret || config.secret || undefined;
+	if (!secret)
+		throw new Error('The secret is missing');
     if (typeof audit === 'object')
         audit = JSON.stringify(audit);
+	if (!prevDigest) {
+		prevDigest = crypto
+			.createHmac(config.hash, secret)
+			.update('')
+			.digest('base64');
+	};
         
-    return crypto.createHmac(config.hash, secret || config.secret)
+    return crypto
+		.createHmac(config.hash, secret)
         .update(audit)
-        .update(prevDigest || noDigest)
+        .update(prevDigest)
         .digest('base64');
 };
 

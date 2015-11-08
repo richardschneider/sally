@@ -8,6 +8,9 @@ describe('Audit trail', function () {
 	var auditlog;
 	
 	beforeEach(function (done) {
+		sally.configure({
+			secret: 'this is not a secure secret'
+		});
 		sally.endCycle('starting audit test');
 		if (fs.existsSync('audit-test.sal'))
 			fs.unlinkSync('audit-test.sal');

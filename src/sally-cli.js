@@ -19,7 +19,7 @@ program
   .version(require('../package.json').version)
   .usage('<cmd>')
   .description('Secure audit log manager')
-  .option('-s, --secret [text]', 'the secret for the audit trail, defaults to the environment variable "sallySecret"')
+  .option('-s, --secret [text]', 'the secret for the audit trail, defaults to the environment variable "SallySecret"')
   .option('-v, --verbose', 'verbose')
   
 program
@@ -56,7 +56,7 @@ function verify(pattern, options) {
 }
 
 function verifyFile(path, options) {
-    var secret = program.secret || process.env.sallySecret;
+    var secret = program.secret || process.env.SallySecret;
 	if (!secret) {
 		console.error('Need the audit trail\'s secret; use --secret [text]');
 		process.exitCode = 1;
@@ -80,7 +80,7 @@ function verifyFile(path, options) {
 }
 
 function listFile(path, options) {
-    var secret = program.secret || process.env.sallySecret;
+    var secret = program.secret || process.env.SallySecret;
 	if (!secret) {
 		console.error('Need the audit trail\'s secret; use --secret [text]');
 		process.exitCode = 1;

@@ -2,13 +2,24 @@
 
 var should = require('should');
 var sally = require('../src/sally');
-
+	
 describe('Crypto', function () {
-    var d1 = sally.sign('a');
-    var d2 = sally.sign('b', d1);
-    var d3 = sally.sign('c', d2);
+	var d1, d2, d3;
+	
+	before(function (done) {
+		sally.configure({
+			secret: 'my secret'
+		});
+		d1 = sally.sign('a');
+		d2 = sally.sign('b', d1);
+		d3 = sally.sign('c', d2);
+		done();
+	});
+	
 
     it('should pass an untampered log', function (done) {
+		console.log("d1 ", d1);
+		console.log("dx ", sally.sign('a'));
         sally.verify('a', d1).should.be.true;
         sally.verify('b', d2, d1).should.be.true;
         sally.verify('c', d3, d2).should.be.true;
