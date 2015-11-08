@@ -73,6 +73,6 @@ sally --help
 
 ## Secret
 
-Sally uses the `secret` to generate the HMAC digest which provides the strong cryptographic assurances.  It can be set with `sally.configure({ secret: ...})`.  However, this means that the secret string is your code and possible also in the repo.  
+Sally uses the `secret` to generate the HMAC digest which provides the strong cryptographic assurances.  It can be set with `sally.configure({ secret: ...})`.  However, this means that the `secret` is in your code and possible also in the repo.  
 
-To avoid this issues, Sally will check for the environment vaiable `SallySecret` containing the secret.
+To avoid this issue, Sally will check for the environment vaiable `SallySecret` containing the secret.
