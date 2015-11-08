@@ -70,3 +70,7 @@ sally --help
     -s, --secret [text]  the secret for the audit trail, defaults to the environment variable "sallySecret"
     -v, --verbose        verbose
 ````
+
+## Secret
+
+Sally uses the `secret` to generate the HMAC digest which provides the strong cryptographic assurances.  It can be set with `sally.configure({ secret: ...})`.  However, this means that the secret string is your code and possible also in the repo.  To above this, Sally will check for the environment vaiable `SallySecret` containing the secret.
