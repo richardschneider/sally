@@ -18,8 +18,6 @@ describe('Crypto', function () {
 	
 
     it('should pass an untampered log', function (done) {
-		console.log("d1 ", d1);
-		console.log("dx ", sally.sign('a'));
         sally.verify('a', d1).should.be.true;
         sally.verify('b', d2, d1).should.be.true;
         sally.verify('c', d3, d2).should.be.true;

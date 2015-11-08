@@ -21,8 +21,8 @@ util.inherits(Sally, EventEmitter);
 
 Sally.prototype.configure = function (opts) {
     opts = opts || {};
-    config.hash = opts.hash || 'sha256';
-    var s = opts.secret || process.env.SallySecret;
+    config.hash = opts.hash || config.hash || 'sha256';
+    var s = opts.secret || config.secret || process.env.SallySecret;
 	if (s && s != '' && s != 'undefined')
 		config.secret = s;
 };

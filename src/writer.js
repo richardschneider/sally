@@ -28,7 +28,8 @@ function SallyWriter(opts)
 		.on('epochStart', this.onEpochStart)
 		.on('epochEnd', this.onEpochEnd)
 		.on('cycleStart', this.onCycleStart)
-		.on('cycleEnd', this.onCycleEnd);
+		.on('cycleEnd', this.onCycleEnd)
+		.configure(opts)
 }
 
 SallyWriter.prototype.onLog = function (audit) {
