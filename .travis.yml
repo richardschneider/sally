@@ -7,6 +7,7 @@ before_script:
   - chmod +x ./test/npm-test.sh
 script: 
   - gulp
-  - node ./src/sally-cli.js verify *.sal -s xyzzy
-  - ./test/npm-test.sh
+  - node ./sally.js verify *.sal -s xyzzy
+  - pkg=$(npm pack)
+  - npm install -g $pkg
   - sally
