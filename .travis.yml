@@ -4,8 +4,8 @@ node_js:
   - stable
 before_script:
   - npm install -g gulp
-script: gulp
-after-script:
+script: 
+  - gulp
   - node src\sally-cli.js verify *.sal -s xyzzy
   
   
