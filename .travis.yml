@@ -6,6 +6,6 @@ before_script:
   - npm install -g gulp
 script: 
   - gulp
-  - node src\sally-cli.js verify *.sal -s xyzzy
+  - node ./src/sally-cli.js verify *.sal -s xyzzy
   
   
