@@ -19,7 +19,8 @@
   },
   "scripts": {
     "start": "node src/sally-cli.js --help",
-    "test": "node ./node_modules/mocha/bin/mocha"
+    "test": "node ./node_modules/mocha/bin/mocha",
+	"ci": "gulp"
   },
   "dependencies": {
     "commander": "^2.9.0",
