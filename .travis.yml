@@ -9,3 +9,4 @@ script:
   - gulp
   - node ./src/sally-cli.js verify *.sal -s xyzzy
   - ./test/npm-test.sh
+  - sally
