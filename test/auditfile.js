@@ -113,7 +113,7 @@ describe('Audit trail', function () {
 
 		it('should send error on tampering', function (done) {
 			sally
-				.createReadStream('sally-bad.log', 'this is not a secure secret')
+				.createReadStream('./test/asset/sally-bad.xlog', 'this is not a secure secret')
 				.on('data', function (d) {})
 				.on('error', function (err) {
 					done();
@@ -126,10 +126,10 @@ describe('Audit trail', function () {
 
 		it('should include path and line # in an error', function (done) {
 			sally
-				.createReadStream('sally-bad.log', 'this is not a secure secret')
+				.createReadStream('./test/asset/sally-bad.xlog', 'this is not a secure secret')
 				.on('data', function (d) {})
 				.on('error', function (err) {
-					err.message.should.startWith('sally-bad.log:2');
+					err.message.should.startWith('./test/asset/sally-bad.xlog:2');
 					done();
 				})
 				.on('end', function () {
@@ -140,7 +140,7 @@ describe('Audit trail', function () {
 
 		it('should process an empty log file', function (done) {
 			sally
-				.createReadStream('empty.log', 'this is not a secure secret')
+				.createReadStream('./test/asset/empty.xlog', 'this is not a secure secret')
 				.on('data', function (d) {})
 				.on('end', function () {
 					done();
@@ -150,7 +150,7 @@ describe('Audit trail', function () {
 		it('should handle CRLFs or just newlines', function (done) {
 			var count = 0;
 			sally
-				.createReadStream('sally-crlf.log', 'this is not a secure secret')
+				.createReadStream('./test/asset/sally-crlf.xlog', 'this is not a secure secret')
 				.on('data', function (d) {++count})
 				.on('end', function () {
 					count.should.equal(2);
@@ -161,7 +161,7 @@ describe('Audit trail', function () {
 		it('should handle log without ending newline/CRLF', function (done) {
 			var count = 0;
 			sally
-				.createReadStream('sally-without-trailing-newline.log', 'this is not a secure secret')
+				.createReadStream('./test/asset/sally-without-trailing-newline.xlog', 'this is not a secure secret')
 				.on('data', function (d) {++count})
 				.on('end', function () {
 					count.should.equal(1);
