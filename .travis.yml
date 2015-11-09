@@ -4,9 +4,9 @@ node_js:
   - stable
 before_script:
   - npm install -g gulp
-script: 
+  - chmod +x ./test/npm-test.sh
+ script: 
   - gulp
   - node ./src/sally-cli.js verify *.sal -s xyzzy
   - ./test/npm-test.sh
-  
   
