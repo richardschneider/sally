@@ -15,10 +15,10 @@
   },
   "main": "./src/sally.js",
   "bin": {
-    "sally": "./src/sally-cli.js"
+    "sally": "./sally.js"
   },
   "scripts": {
-    "start": "node src/sally-cli.js --help",
+    "start": "node sally.js --help",
     "test": "node ./node_modules/mocha/bin/mocha",
 	"ci": "gulp"
   },

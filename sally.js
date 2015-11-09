@@ -12,7 +12,7 @@
 var program = require('commander');
 var process = require('process');
 var Glob = require("glob").Glob;
-var sally = require('./sally');
+var sally = require('./src/sally');
 
 function verifyFile(path) {
     var secret = program.secret || process.env.SallySecret;
@@ -84,7 +84,7 @@ function listFile(path) {
 }
 
 program
-  .version(require('../package.json').version)
+  .version(require('./package.json').version)
   .usage('<cmd>')
   .description('Secure audit log manager')
   .option('-s, --secret [text]', 'the secret for the audit trail, defaults to the environment variable "SallySecret"')
