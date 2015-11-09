@@ -5,4 +5,4 @@ ls $pkg
 mkdir -p ../tmp
 cd ../tmp
 npm install ../sally/$pkg
-sally --help
+./node_modules/.bin/sally --help
