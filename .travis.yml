@@ -7,6 +7,6 @@ before_script:
 script: 
   - gulp
   - node ./src/sally-cli.js verify *.sal -s xyzzy
-  - ./test/npmtest.sh
+  - ./test/npm-test.sh
   
   
