@@ -32,7 +32,7 @@ describe('Sally', function () {
 		var x = process.env.SallySecret;
 		try {
 			sally.removeSecret();
-			process.env.SallySecret = 'xxxxx';
+			process.env.SallySecret = 'xyzzy';
 			sally.configure();
 			sally.log('should be ok');
 		} finally {
@@ -46,7 +46,7 @@ describe('Sally', function () {
 		try {
 			process.env.SallySecret = undefined;
 			sally.removeSecret();
-			sally.configure({ secret: 'xxx' });
+			sally.configure({ secret: 'xyzzy' });
 			sally.log('should be ok');
 		} finally {
 			process.env.SallySecret = x;
@@ -54,4 +54,4 @@ describe('Sally', function () {
 		done();
 	});
 
-	});
+});

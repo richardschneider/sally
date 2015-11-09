@@ -15,7 +15,7 @@ module.exports  = function (opts) {
     config.user = opts.user || function() { return 'anonymous'; };
     config.hostname = opts.hostname || os.hostname();
 	
-	opts.path = opts.path || 'express.sal';
+	opts.prefix = opts.prefix || 'express-';
 	new sally.auditTrail(opts);
     return logger;
 }

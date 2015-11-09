@@ -17,6 +17,7 @@ function SallyWriter(opts)
 	
 	opts = opts || {};
 	this.path = opts.path || 'sally.log';
+	this.prefix = opts.prefix || '';
 	this.digest = undefined;
 	this.onLog = this.onLog.bind(this);
 	this.onEpochStart = this.onEpochStart.bind(this);
@@ -48,6 +49,16 @@ SallyWriter.prototype.onEpochEnd = function (epoch) {
 };
 
 SallyWriter.prototype.onCycleStart = function (cycle) {
+	var now = new Date();
+	var today = now.toISOString().slice(0,10).replace(/-/g,"");
+	var gen = 0;
+	while (true)
+	{
+		this.path = this.prefix + today + '-' + ++gen + '.sal';
+		if (!fs.existsSync(this.path))
+			break;
+	}
+	
 	this.digest = this.sally.sign(cycle, this.digest); 
 	var entry = {
 		cycle: cycle,
@@ -85,8 +96,7 @@ function encode(entry) {
 
 SallyWriter.prototype.createReadStream = function () {
 	var reader = require('./reader');
-	return new reader({path: this.path})
-		.createReadStream();
+	return reader(this.path);
 };
 
 module.exports = SallyWriter;

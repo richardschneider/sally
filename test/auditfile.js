@@ -9,18 +9,20 @@ describe('Audit trail', function () {
 	
 	beforeEach(function (done) {
 		sally.configure({
-			secret: 'this is not a secure secret'
+			secret: 'xyzzy'
 		});
 		sally.endCycle('starting audit test');
 		if (fs.existsSync('audit-test.sal'))
 			fs.unlinkSync('audit-test.sal');
-		auditlog = new sally.auditTrail({ path: 'audit-test.sal' });
+		auditlog = new sally.auditTrail();
         done();
 	});
 	
 	afterEach(function (done) {
 		sally.endCycle('testing finished');
 		auditlog.close();
+		if (fs.existsSync(auditlog.path))
+			fs.unlinkSync(auditlog.path);
         done();
 	});
 	
@@ -41,10 +43,7 @@ describe('Audit trail', function () {
 	});
 	
 	it('should not record entries when closed', function (done) {
-		var path = 'closed.log';
-		if (fs.existsSync(path))
-			fs.unlinkSync(path);
-		var log = new sally.auditTrail({path: path});
+		var log = new sally.auditTrail();
 		sally.startCycle();
 		sally.log('line 1');
 		sally.log('line 2');
@@ -54,13 +53,14 @@ describe('Audit trail', function () {
 		
 		var i;
 		var count = 0;
-		fs.createReadStream(path)
+		fs.createReadStream(log.path)
 		  .on('data', function(chunk) {
 			for (i=0; i < chunk.length; ++i)
 			  if (chunk[i] == 10) count++;
 		  })
 		  .on('end', function() {
 		    count.should.equal(2 + 1);
+			fs.unlinkSync(log.path);
 			done();
 		  });
 	});
@@ -73,107 +73,98 @@ describe('Audit trail', function () {
 			.on('end', function () { done() });
 	});
 
+	it('should have a new name for a new cycle', function (done) {
+		var a = auditlog.path;
+		sally.startCycle();
+		a.should.not.equal(auditlog.path);
+		done();
+	});
+	
 	describe('Streaming', function() {
 	
 		it('should stream entries as an object', function (done) {
 			var count = 0;
-			auditlog.path = 'sally-2.log';
-			var stream = auditlog.createReadStream();
-			stream.on('data', function (entry) {
-				++count;
-			});
-			stream.on('end', function () {
-				count.should.equal(2);
-				auditlog.path = 'foo.log';
-				done();
-			});
+			sally
+				.log('alpha')
+				.log('beta')
+				.createReadStream(auditlog.path)
+				.on('data', function (entry) {
+					++count;
+				})
+				.on('end', function () {
+					count.should.equal(2 + 1);
+					done();
+				});
 		});
 		
 		it('should send error on bad JSON', function (done) {
-			auditlog.path = 'sally-bad-1.log';
-			if (fs.existsSync(auditlog.path))
-				fs.unlinkSync(auditlog.path);
 			fs.appendFileSync(auditlog.path, 'this is not JSON');
-			var stream = auditlog.createReadStream();
-			stream
+			auditlog
+				.createReadStream()
 				.on('data', function (d) {})
 				.on('error', function (err) {
-					auditlog.path = 'foo.log';
 					done();
 				})
 				.on('end', function () {
-					auditlog.path = 'foo.log';
 					should.fail('error not emitted')
 					done();
 				});
 		});
 
 		it('should send error on tampering', function (done) {
-			auditlog.path = 'sally-bad.log';
-			var stream = auditlog.createReadStream();
-			stream
+			sally
+				.createReadStream('sally-bad.log', 'this is not a secure secret')
 				.on('data', function (d) {})
 				.on('error', function (err) {
-					auditlog.path = 'foo.log';
 					done();
 				})
 				.on('end', function () {
-					auditlog.path = 'foo.log';
 					should.fail('error not emitted')
 					done();
 				});
 		});
 
 		it('should include path and line # in an error', function (done) {
-			auditlog.path = 'sally-bad.log';
-			var stream = auditlog.createReadStream();
-			stream
+			sally
+				.createReadStream('sally-bad.log', 'this is not a secure secret')
 				.on('data', function (d) {})
 				.on('error', function (err) {
 					err.message.should.startWith('sally-bad.log:2');
-					auditlog.path = 'foo.log';
 					done();
 				})
 				.on('end', function () {
 					should.fail('error not emitted')
-					auditlog.path = 'foo.log';
 					done();
 				});
 		});
 
 		it('should process an empty log file', function (done) {
-			auditlog.path = 'empty.log';
-			var stream = auditlog.createReadStream();
-			stream
+			sally
+				.createReadStream('empty.log', 'this is not a secure secret')
 				.on('data', function (d) {})
 				.on('end', function () {
-					auditlog.path = 'foo.log';
 					done();
 				});
 		});
 
 		it('should handle CRLFs or just newlines', function (done) {
-			auditlog.path = 'sally-crlf.log';
 			var count = 0;
-			var stream = auditlog.createReadStream();
-			stream
+			sally
+				.createReadStream('sally-crlf.log', 'this is not a secure secret')
 				.on('data', function (d) {++count})
 				.on('end', function () {
 					count.should.equal(2);
-					auditlog.path = 'foo.log';
 					done();
 				});
 		});
 
 		it('should handle log without ending newline/CRLF', function (done) {
-			auditlog.path = 'sally-without-trailing-newline.log';
 			var count = 0;
-			var stream = auditlog.createReadStream();
-			stream
+			sally
+				.createReadStream('sally-without-trailing-newline.log', 'this is not a secure secret')
 				.on('data', function (d) {++count})
 				.on('end', function () {
 					count.should.equal(1);
-					auditlog.path = 'foo.log';
 					done();
 				});
 		});

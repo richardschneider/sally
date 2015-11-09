@@ -13,7 +13,7 @@ var program = require('commander');
 var process = require('process');
 var Glob = require("glob").Glob
 var fs = require('fs');
-var reader = require('./reader');
+var sally = require('./sally');
 
 program
   .version(require('../package.json').version)
@@ -65,8 +65,8 @@ function verifyFile(path, options) {
 	if (program.verbose)
 		console.log("Verifying", path);
 	
-	new reader({path: path, secret: secret})
-		.createReadStream()
+	sally
+		.createReadStream(path, secret)
 		.on('data', function (entry) {
 		})
 		.on('error', function (e) {
@@ -89,8 +89,8 @@ function listFile(path, options) {
 	if (program.verbose)
 		console.log("List", path);
 	
-	new reader({path: path, secret: secret})
-		.createReadStream()
+	sally
+		.createReadStream(path, secret)
 		.on('data', function (msg) {
 			console.log(msg);
 			console.log();

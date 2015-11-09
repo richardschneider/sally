@@ -8,7 +8,7 @@ describe('Crypto', function () {
 	
 	before(function (done) {
 		sally.configure({
-			secret: 'my secret'
+			secret: 'xyzzy'
 		});
 		d1 = sally.sign('a');
 		d2 = sally.sign('b', d1);

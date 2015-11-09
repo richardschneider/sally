@@ -40,6 +40,8 @@ self.removeSecret = function () {
  */
 self.auditTrail = require('./writer');
 
+self.createReadStream = require('./reader');
+
 /**
  * Adds the sally logger to the express pipeline.
  *
@@ -91,6 +93,8 @@ self.log = function(audit) {
 	
 	if (epoch.maxRecords <= epoch.recordCount)
 		self.endEpoch('maximum number of records reached');
+		
+	return this;
 };
 
 /**
