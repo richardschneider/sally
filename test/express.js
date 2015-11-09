@@ -9,6 +9,7 @@ describe('Express logging middleware', function () {
     var somethingUrl;
 
 	it('should log the 5Ws', function (done) {
+        var sallyEmit = false;
         sally.once('log', function(audit) {
 			audit.should.have.property('who', 'anonymous');
 			audit.should.have.property('when');
@@ -18,13 +19,16 @@ describe('Express logging middleware', function () {
 			audit.where.should.have.property('server');
 			audit.should.have.property('why', 'POST');
 			audit.should.have.property('what', '/something/1');
-			done();
+            sallyEmit = true;
 		});
         request(server)
             .post('/something')
             .send(something)
             .expect(201)
-			.end();
+            .expect(function () {
+                sallyEmit.should.be.true;
+            })
+            .end(done);
 	});
 	
     it('should log on POST', function (done) {

@@ -172,6 +172,6 @@ self.log = function(audit) {
 	self.emit("cycleEnd", prevCycle);
  }
 
- process.on('exit', function (code) {
+process.on('exit', function (code) {
 	self.endCycle('process exit with ' + code);
 });

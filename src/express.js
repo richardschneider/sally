@@ -9,7 +9,7 @@ var config = {};
 /*
  * app.use(sally.express({ ... })
  */
-module.exports  = function (opts) {
+module.exports = function (opts) {
     opts = opts || {};
     config.methods = opts.methods || ['POST', 'PUT', 'DELETE', 'PATCH'];
     config.user = opts.user || function() { return 'anonymous'; };
