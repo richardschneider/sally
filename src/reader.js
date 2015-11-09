@@ -5,7 +5,7 @@
  */
  
 var fs = require('fs');
-var stream = require('stream')
+var stream = require('stream');
 var split = require('split');
 var sally = require('./sally');
 
@@ -17,7 +17,7 @@ module.exports = function (path, secret) {
 		transform: function(line, encoding, done) {
 			var transform = this;
 			++lineNumber;
-			if (!line || line == '') 
+			if (!line || line === '') 
 				return done();
 			try {
 				var entry = JSON.parse(line);

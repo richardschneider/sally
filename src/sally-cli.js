@@ -11,51 +11,10 @@
 
 var program = require('commander');
 var process = require('process');
-var Glob = require("glob").Glob
-var fs = require('fs');
+var Glob = require("glob").Glob;
 var sally = require('./sally');
 
-program
-  .version(require('../package.json').version)
-  .usage('<cmd>')
-  .description('Secure audit log manager')
-  .option('-s, --secret [text]', 'the secret for the audit trail, defaults to the environment variable "SallySecret"')
-  .option('-v, --verbose', 'verbose')
-  
-program
-  .command('verify <file>')
-  .description('verify the audit trail file, glob wildcards allowed')
-  .action(verify)
-
-program
-  .command('list <file>')
-  .description('petty print the audit trail file')
-  .action(listFile)
-
-program.parse(process.argv);
-if (!program.args.length) program.help();
-
-function verify(pattern, options) {
-	var didSomething = false;
-	var glob = new Glob(pattern, { strict: true })
-	glob
-		.on('match', function(path) {
-			didSomething = true;
-			verifyFile(path, options);
-		})
-		.on('error', function (e) {
-			console.error(e.message)
-			process.exitCode = 1;
-		})
-		.on('end', function () {
-			if (!didSomething) {
-				console.error('No files were processed')
-				process.exitCode = 1;
-			}
-		});
-}
-
-function verifyFile(path, options) {
+function verifyFile(path) {
     var secret = program.secret || process.env.SallySecret;
 	if (!secret) {
 		console.error('Need the audit trail\'s secret; use --secret [text]');
@@ -67,10 +26,10 @@ function verifyFile(path, options) {
 	
 	sally
 		.createReadStream(path, secret)
-		.on('data', function (entry) {
+		.on('data', function () {
 		})
 		.on('error', function (e) {
-			console.error(e.message)
+			console.error(e.message);
 			process.exitCode = 1;
 		})
 		.on('end', function () {
@@ -79,7 +38,26 @@ function verifyFile(path, options) {
 		});
 }
 
-function listFile(path, options) {
+function verify(pattern) {
+	var didSomething = false;
+	new Glob(pattern, { strict: true })
+		.on('match', function(path) {
+			didSomething = true;
+			verifyFile(path);
+		})
+		.on('error', function (e) {
+			console.error(e.message);
+			process.exitCode = 1;
+		})
+		.on('end', function () {
+			if (!didSomething) {
+				console.error('No files were processed');
+				process.exitCode = 1;
+			}
+		});
+}
+
+function listFile(path) {
     var secret = program.secret || process.env.SallySecret;
 	if (!secret) {
 		console.error('Need the audit trail\'s secret; use --secret [text]');
@@ -96,7 +74,7 @@ function listFile(path, options) {
 			console.log();
 		})
 		.on('error', function (e) {
-			console.error(e.message)
+			console.error(e.message);
 			process.exitCode = 1;
 		})
 		.on('end', function () {
@@ -104,3 +82,25 @@ function listFile(path, options) {
 				console.log("Done", path);
 		});
 }
+
+program
+  .version(require('../package.json').version)
+  .usage('<cmd>')
+  .description('Secure audit log manager')
+  .option('-s, --secret [text]', 'the secret for the audit trail, defaults to the environment variable "SallySecret"')
+  .option('-v, --verbose', 'verbose');
+  
+program
+  .command('verify <file>')
+  .description('verify the audit trail file, glob wildcards allowed')
+  .action(verify);
+
+program
+  .command('list <file>')
+  .description('petty print the audit trail file')
+  .action(listFile);
+
+program.parse(process.argv);
+
+if (!program.args.length) 
+	program.help();

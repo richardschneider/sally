@@ -6,20 +6,6 @@ var sally = require('./sally');
 
 var config = {};
 
-/*
- * app.use(sally.express({ ... })
- */
-module.exports = function (opts) {
-    opts = opts || {};
-    config.methods = opts.methods || ['POST', 'PUT', 'DELETE', 'PATCH'];
-    config.user = opts.user || function() { return 'anonymous'; };
-    config.hostname = opts.hostname || os.hostname();
-	
-	opts.prefix = opts.prefix || 'express-';
-	new sally.auditTrail(opts);
-    return logger;
-}
-
 /**
  * Generates audit record for every request that creates/modifies a resource.
  */
@@ -36,12 +22,9 @@ function logger (req, res, next) {
             who: config.user(req),
             when: now.toISOString(),
             where: {
-                client: req.ip
-                    || req._remoteAddress
-                    || (req.connection && req.connection.remoteAddress)
-                    || undefined,
+                client: req.ip || req._remoteAddress || (req.connection ? req.connection.remoteAddress : undefined),
                 server: config.hostname
-                },
+			},
             why: req.method,
             what: (req.method == 'POST') ? res._headers['location'] : req.url,
             status: res.statusCode,
@@ -51,4 +34,18 @@ function logger (req, res, next) {
     
     onFinished(res, logRequest);
     next();
+}
+
+/*
+ * app.use(sally.express({ ... })
+ */
+module.exports = function (opts) {
+    opts = opts || {};
+    config.methods = opts.methods || ['POST', 'PUT', 'DELETE', 'PATCH'];
+    config.user = opts.user || function() { return 'anonymous'; };
+    config.hostname = opts.hostname || os.hostname();
+	
+	opts.prefix = opts.prefix || 'express-';
+	new sally.auditTrail(opts);
+    return logger;
 };

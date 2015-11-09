@@ -4,7 +4,6 @@ var crypto = require('crypto');
 var uuid = require('uuid');
 var process = require('process');
 var durationParse = require('parse-duration');
-var os = require('os');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 
@@ -23,7 +22,7 @@ Sally.prototype.configure = function (opts) {
     opts = opts || {};
     config.hash = opts.hash || config.hash || 'sha256';
     var s = opts.secret || config.secret || process.env.SallySecret;
-	if (s && s != '' && s != 'undefined')
+	if (s && s !== '' && s != 'undefined')
 		config.secret = s;
 };
 
@@ -63,7 +62,7 @@ self.express = require('./express');
 			.createHmac(config.hash, secret)
 			.update('')
 			.digest('base64');
-	};
+	}
         
     return crypto
 		.createHmac(config.hash, secret)
@@ -121,7 +120,7 @@ self.log = function(audit) {
 	}, ttl);
 	self.emit("epochStart", epoch);
 	return epoch;
- }
+ };
  
  self.endEpoch = function(reason) {
 	if (!epoch) return 0;
@@ -134,12 +133,12 @@ self.log = function(audit) {
 		self.endCycle('max epochs per cycle reached');
 		
 	epoch = undefined;
- }
+ };
  
 /**
  * Starts a new cycle.
  */
- self.startCycle = function(opts) {
+self.startCycle = function(opts) {
 	self.endCycle('starting a new cycle');
 	opts = opts || {};
 	cycle = {
@@ -157,9 +156,9 @@ self.log = function(audit) {
 	}, ttl);
 	self.emit("cycleStart", cycle);
 	return cycle;
- }
+};
  
- self.endCycle = function(reason) {
+self.endCycle = function(reason) {
 	if (!cycle) return 0;
 	
 	var prevCycle = cycle;
@@ -170,7 +169,7 @@ self.log = function(audit) {
 	prevCycle.endTime = new Date().toISOString();
 	prevCycle.endReason = reason;
 	self.emit("cycleEnd", prevCycle);
- }
+};
 
 process.on('exit', function (code) {
 	self.endCycle('process exit with ' + code);

@@ -12,7 +12,6 @@ var os = require('os');
  */
 function SallyWriter(opts)
 {
-	var self = this;
 	this.sally = require('./sally');
 	
 	opts = opts || {};
@@ -30,7 +29,14 @@ function SallyWriter(opts)
 		.on('epochEnd', this.onEpochEnd)
 		.on('cycleStart', this.onCycleStart)
 		.on('cycleEnd', this.onCycleEnd)
-		.configure(opts)
+		.configure(opts);
+}
+
+/*
+ * An entry is one line in the files.
+ */
+function encode(entry) {
+	return JSON.stringify(entry) + os.EOL;
 }
 
 SallyWriter.prototype.onLog = function (audit) {
@@ -42,10 +48,10 @@ SallyWriter.prototype.onLog = function (audit) {
 	fs.appendFileSync(this.path, encode(entry));
 };
 
-SallyWriter.prototype.onEpochStart = function (epoch) {
+SallyWriter.prototype.onEpochStart = function (/*epoch*/) {
 };
 
-SallyWriter.prototype.onEpochEnd = function (epoch) {
+SallyWriter.prototype.onEpochEnd = function (/*epoch*/) {
 };
 
 SallyWriter.prototype.onCycleStart = function (cycle) {
@@ -54,7 +60,8 @@ SallyWriter.prototype.onCycleStart = function (cycle) {
 	var gen = 0;
 	while (true)
 	{
-		this.path = this.prefix + today + '-' + ++gen + '.sal';
+		++gen;
+		this.path = this.prefix + today + '-' + gen + '.sal';
 		if (!fs.existsSync(this.path))
 			break;
 	}
@@ -84,13 +91,6 @@ SallyWriter.prototype.close = function () {
 	this.sally.removeListener('cycleStart', this.onCycleStart);
 	this.sally.removeListener('cycleEnd', this.onCycleEnd);
 };
-
-/*
- * An entry is one line in the files.
- */
-function encode(entry) {
-	return JSON.stringify(entry) + os.EOL;
-}
 
 /* For our tests.  TODO they should be changed not to use thus function. */
 
