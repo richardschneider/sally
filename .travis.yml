@@ -5,8 +5,7 @@ node_js:
 before_script:
   - npm install -g gulp
   - chmod +x ./test/npm-test.sh
- script: 
+script: 
   - gulp
   - node ./src/sally-cli.js verify *.sal -s xyzzy
   - ./test/npm-test.sh
-  
