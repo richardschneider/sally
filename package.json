@@ -13,9 +13,9 @@
     "type": "git",
     "url": "git://github.com/richardschneider/sally"
   },
-  "main": "src/sally.js",
+  "main": "./src/sally.js",
   "bin": {
-    "sally": "src/sally-cli.js"
+    "sally": "./src/sally-cli.js"
   },
   "scripts": {
     "start": "node src/sally-cli.js --help",
