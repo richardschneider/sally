@@ -6,7 +6,7 @@ Secure audit logging records the user’s actions on content and enables detecti
 
 Install with [npm](http://blog.npmjs.org/post/85484771375/how-to-install-npm)
 
-    > npm install sally
+    > npm install sally-js
 
 ### with express
 
