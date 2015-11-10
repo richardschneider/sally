@@ -10,6 +10,4 @@ script:
   - node ./sally.js verify *.sal -s xyzzy
   - pkg=$(npm pack)
   - npm install -g $pkg
-  - pwd
-  - (cd ~ && pwd && sally)
   
