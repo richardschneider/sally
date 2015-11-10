@@ -13,13 +13,13 @@
     "type": "git",
     "url": "git://github.com/richardschneider/sally"
   },
-  "main": "./src/sally.js",
+  "main": "./lib/sally.js",
   "bin": {
-    "sally": "./sally.js"
+    "sally": "./bin/sally"
   },
   "scripts": {
-    "start": "node sally.js --help",
-    "test": "node ./node_modules/mocha/bin/mocha",
+    "start": "./bin/sally --help",
+    "test": "mocha",
 	"ci": "gulp"
   },
   "dependencies": {

@@ -2,7 +2,7 @@
 
 var should = require('should');
 var uuid = require('uuid');
-var sally = require('../src/sally');
+var sally = require('../lib/sally');
 
 describe('Cycle', function () {
 	it('should emit cycleStart when starting', function (done) {

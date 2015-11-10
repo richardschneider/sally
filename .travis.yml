@@ -4,10 +4,9 @@ node_js:
   - stable
 before_script:
   - npm install -g gulp
-  - chmod +x ./test/npm-test.sh
 script: 
   - gulp
-  - node ./sally.js verify *.sal -s xyzzy
+  - node ./bin/sally verify *.sal -s xyzzy
   - pkg=$(npm pack)
   - npm install -g $pkg
   - (cd ~ && sally)

@@ -2,7 +2,7 @@
 
 var should = require('should');
 var process = require('process');
-var sally = require('../src/sally');
+var sally = require('../lib/sally');
 
 describe('Sally', function () {
 	var log;

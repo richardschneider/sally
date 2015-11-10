@@ -1,5 +1,5 @@
 var should = require('should');
-var sally = require('../src/sally');
+var sally = require('../lib/sally');
 var server = require('./server');
 var request = require("supertest");
 

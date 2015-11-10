@@ -10,7 +10,7 @@ var paths = {
   lint: ['./gulpfile.js', './src/**/*.js'],
   watch: ['./gulpfile.js', './src/**', './test/**/*.js', '!test/{temp,temp/**}'],
   tests: ['./test/**/*.js', '!test/{temp,temp/**}'],
-  source: ['./src/*.js']
+  source: ['./lib/*.js', './bin/*']
 };
 
 var plumberConf = {};

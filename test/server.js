@@ -2,7 +2,7 @@
 
 var express = require('express');
 var bodyParser = require('body-parser');
-var sally = require('../src/sally');
+var sally = require('../lib/sally');
 
 var app = express();
 app.use(sally.express({ }));

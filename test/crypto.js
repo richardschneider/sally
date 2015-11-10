@@ -1,7 +1,7 @@
 'use strict';
 
 var should = require('should');
-var sally = require('../src/sally');
+var sally = require('../lib/sally');
 	
 describe('Crypto', function () {
 	var d1, d2, d3;

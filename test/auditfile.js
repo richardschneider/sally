@@ -2,7 +2,7 @@
 
 var should = require('should');
 var fs = require('fs');
-var sally = require('../src/sally');
+var sally = require('../lib/sally');
 
 describe('Audit trail', function () {
 	var auditlog;

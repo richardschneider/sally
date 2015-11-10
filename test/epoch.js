@@ -1,7 +1,7 @@
 'use strict';
 
 var should = require('should');
-var sally = require('../src/sally');
+var sally = require('../lib/sally');
 
 describe('Epoch', function () {
 	it('should emit epochStart when starting', function (done) {
