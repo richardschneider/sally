@@ -5,7 +5,7 @@
     "name": "Richard Schneider",
     "email": "makaretu@gmail.com"
   },
-  "version": "0.0.42",
+  "version": "0.1.0",
   "license": "MIT",
   "homepage": "https://richardschneider.github/sally",
   "bugs": "https://github.com/richardschneider/sally/issues",
@@ -20,7 +20,7 @@
   "scripts": {
     "start": "./bin/sally --help",
     "test": "mocha",
-	"ci": "gulp"
+    "ci": "gulp"
   },
   "dependencies": {
     "commander": "^2.9.0",
