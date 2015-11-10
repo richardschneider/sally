@@ -12,7 +12,7 @@ Install with [npm](http://blog.npmjs.org/post/85484771375/how-to-install-npm)
 
 ```` javascript
 var express = require('express');
-var sally = require('sally');
+var sally = require('sally-js');
 
 var app = express();
 app.use(sally.express({ secret: 'a not secure secret' }));
@@ -73,6 +73,6 @@ sally --help
 
 ## Secret
 
-Sally uses the `secret` to generate the HMAC digest which provides the strong cryptographic assurances.  It can be set with `sally.configure({ secret: ...})`.  However, this means that the `secret` is in your code and possible also in the repo.  
+Sally uses the `secret` to generate the HMAC digest which provides the strong cryptographic assurances.  It can be set with `sally.configure({ secret: ...})` or with `sally.express({ ... })`.  However, this means that the `secret` is in your code and possible also in the repo.  
 
-To avoid this issue, Sally will check for the environment vaiable `SallySecret` containing the secret.
+To avoid the above issue, Sally will use the value of the environment variable `SallySecret`, if present, as the secret value.
