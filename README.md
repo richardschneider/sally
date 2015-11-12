@@ -23,13 +23,16 @@ Produces an audit trail of each request that modifies a resource or returns an e
 ```` javascript
 { audit: 
    { who: 'anonymous',
-     when: '2015-11-07T11:00:05.144Z',
-     where: { client: '127.0.0.1', server: 'RoadWarrior' },
+     when: '2015-11-12T05:38:22.159Z',
+     where: 
+      { client: '::ffff:127.0.0.1',
+        host: '127.0.0.1:33578',
+        server: 'richardschneider-sally-2123745' },
      why: 'POST',
-     what: '/something/1',
+     what: '/something/2',
      status: 201 },
-  digest: 'Cw/SVbIILwW2jHcNVaIrlJE2OevrfBc9vdRtfkEkOAQ=' }
-
+  digest: 'DVSJZKM0xASOu76y3X/VNjZ4FuTb/P3OXW9MiS5vV/w=' }
+  
 { audit: 
    { who: 'anonymous',
      when: '2015-11-07T11:00:06.005Z',

@@ -31,6 +31,23 @@ describe('Express logging middleware', function () {
             .end(done);
 	});
 	
+	it('should log the HTTP Host header', function (done) {
+        var sallyEmit = false;
+        sally.once('log', function(audit) {
+			audit.should.have.property('where');
+			audit.where.should.have.property('host');
+            sallyEmit = true;
+		});
+        request(server)
+            .post('/something')
+            .send(something)
+            .expect(201)
+            .expect(function () {
+                sallyEmit.should.be.true;
+            })
+            .end(done);
+	});
+
     it('should log on POST', function (done) {
         var sallyEmit = false;
         sally.once('log', function(audit) {
