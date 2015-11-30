@@ -42,6 +42,16 @@ Produces an audit trail of each request that modifies a resource or returns an e
      status: 404 },
   digest: 'xUTQHAbg8W+mZkRy4zsUs8bVw2NK/e0JZd/vNbkujRg=' }
 ````
+`sally.express()` takes th following options object
+
+property | description
+-------- | -----------
+methods | An `array` of HTTP method that will trigger an audit.  Any status above 399 will also trigger an audit.  The default is `['POST', 'PUT', 'DELETE', 'PATCH']`.
+user | a `function(req)` that should return the user name or ID or both.  Defaults to `req => 'anonymous'`.
+hostname | The name of the server.  Defaults to `os.hostname()`.
+prefix | A prefix for each audit log file.  Defaults to `'express-'`.
+
+
 ### with javascript
 
 ```` javascript
