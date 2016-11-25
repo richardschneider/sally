@@ -2,6 +2,7 @@
 
 var gulp = require('gulp');
 var mocha = require('gulp-spawn-mocha');
+var jshint = require('gulp-jshint');
 var plugins = require('gulp-load-plugins')();
 var DEBUG = process.env.NODE_ENV === 'debug',
       CI = process.env.CI === 'true';
@@ -22,11 +23,10 @@ if (CI) {
 }
 
 gulp.task('lint', function () {
-  return gulp.src(paths.lint)
-    .pipe(plugins.jshint('.jshintrc'))
-    .pipe(plugins.plumber(plumberConf))
-    .pipe(plugins.jscs())
-    .pipe(plugins.jshint.reporter('jshint-stylish'));
+ return gulp.src(paths.lint)
+    .pipe(jshint())
+    .pipe(jshint.reporter('jshint-stylish'))
+    .pipe(jshint.reporter('fail'));
 });
 
   

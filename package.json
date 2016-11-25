@@ -24,28 +24,30 @@
   },
   "dependencies": {
     "commander": "^2.9.0",
-    "glob": "^5.0.15",
+    "glob": "^7.1.1",
     "on-finished": "^2.3.0",
     "parse-duration": "^0.1.1",
     "split": "^1.0.0",
-    "uuid": "^2.0.1"
+    "uuid": "^3.0.0"
   },
   "devDependencies": {
     "body-parser": "^1.14.1",
     "express": "^4.13.3",
     "gulp": "^3.8.8",
-    "gulp-bump": "^0.1.11",
+    "gulp-bump": "^2.5.1",
     "gulp-coveralls": "^0.1.4",
-    "gulp-jscs": "^1.1.2",
-    "gulp-jshint": "^1.8.4",
-    "gulp-load-plugins": "^0.6.0",
+    "gulp-jscs": "^4.0.0",
+    "gulp-jshint": "^2.0.4",
+    "gulp-load-plugins": "^1.4.0",
     "gulp-plumber": "^1.0.1",
-    "gulp-spawn-mocha": "^2.2.1",
+    "gulp-spawn-mocha": "^3.1.0",
     "gulp-util": "^3.0.1",
-    "jshint-stylish": "^0.4.0",
+    "istanbul": "^0.4.5",
+    "jshint": "^2.9.4",
+    "jshint-stylish": "^2.2.1",
     "mocha": "*",
-    "should": "^4.0.4",
-    "supertest": "^1.1.0",
-    "supertest-as-promised": "^2.0.2"
+    "should": "^11.1.1",
+    "supertest": "^2.0.1",
+    "supertest-as-promised": "^4.0.2"
   }
 }
