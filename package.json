@@ -37,7 +37,7 @@
     "gulp-bump": "^2.5.1",
     "gulp-coveralls": "^0.1.4",
     "gulp-jscs": "^4.0.0",
-    "gulp-jshint": "^2.0.4",
+    "gulp-jshint": "^2.1.0",
     "gulp-load-plugins": "^1.4.0",
     "gulp-plumber": "^1.0.1",
     "gulp-spawn-mocha": "^3.1.0",
