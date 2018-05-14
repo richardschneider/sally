@@ -31,7 +31,7 @@
     "uuid": "^3.0.0"
   },
   "devDependencies": {
-    "body-parser": "^1.14.1",
+    "body-parser": "1.18.2",
     "express": "^4.13.3",
     "gulp": "^3.8.8",
     "gulp-bump": "^2.5.1",
