@@ -28,7 +28,7 @@
     "on-finished": "^2.3.0",
     "parse-duration": "^0.1.1",
     "split": "^1.0.0",
-    "uuid": "^3.0.0"
+    "uuid": "^3.3.0"
   },
   "devDependencies": {
     "body-parser": "^1.14.1",
