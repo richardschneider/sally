@@ -23,7 +23,7 @@
     "ci": "gulp"
   },
   "dependencies": {
-    "commander": "^2.9.0",
+    "commander": "^2.16.0",
     "glob": "^7.1.1",
     "on-finished": "^2.3.0",
     "parse-duration": "^0.1.1",
