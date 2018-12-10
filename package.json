@@ -33,7 +33,7 @@
   "devDependencies": {
     "body-parser": "^1.14.1",
     "express": "^4.13.3",
-    "gulp": "^3.8.8",
+    "gulp": "^4.0.0",
     "gulp-bump": "^2.5.1",
     "gulp-coveralls": "^0.1.4",
     "gulp-jscs": "^4.0.0",
