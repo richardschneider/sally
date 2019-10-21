@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "commander": "^2.9.0",
-    "glob": "^7.1.1",
+    "glob": "^7.1.5",
     "on-finished": "^2.3.0",
     "parse-duration": "^0.1.1",
     "split": "^1.0.0",
